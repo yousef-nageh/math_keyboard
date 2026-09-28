@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:math_keyboard/src/foundation/decimal_separator.dart';
+import 'package:math_keyboard/src/foundation/math_keyboard_semantics.dart';
 import 'package:math_keyboard/src/widgets/math_field.dart';
 import 'package:math_keyboard/src/widgets/math_keyboard.dart';
+import 'package:math_keyboard/src/widgets/math_keyboard_theme.dart';
 
 /// A [FormField] that contains a [MathField].
 ///
@@ -32,40 +35,58 @@ class MathFormField extends FormField<String> {
     ValueChanged<String>? onFieldSubmitted,
     AutovalidateMode autovalidateMode = AutovalidateMode.disabled,
     FormFieldValidator<String>? validator,
+    MathKeyboardStyle? style,
+    MathKeyboardSemantics? semantics,
+    String? semanticsValue,
+    this.decimalSeparator,
+    this.isShowMultiplyValueAsDot = true,
   }) : super(
-          key: key,
-          initialValue:
-              controller != null ? controller.currentEditingValue() : '',
-          validator: validator,
-          autovalidateMode: autovalidateMode,
-          builder: (FormFieldState<String> field) {
-            final state = field as _MathFormFieldState;
+         key: key,
+         initialValue: controller != null
+             ? controller.currentEditingValue()
+             : '',
+         validator: validator,
+         autovalidateMode: autovalidateMode,
+         builder: (FormFieldState<String> field) {
+           final state = field as _MathFormFieldState;
 
-            void onChangedHandler(String value) {
-              field.didChange(value);
-              if (onChanged != null) {
-                onChanged(value);
-              }
-            }
+           void onChangedHandler(String value) {
+             field.didChange(value);
+             if (onChanged != null) {
+               onChanged(value);
+             }
+           }
 
-            return MathField(
-
-              controller: state._controller,
-              focusNode: focusNode,
-              decoration: decoration.copyWith(errorText: field.errorText),
-              keyboardType: keyboardType,
-              variables: variables,
-              autofocus: autofocus,
-              onChanged: onChangedHandler,
-              onSubmitted: onFieldSubmitted,
-            );
-          },
-        );
+           return MathField(
+             controller: state._controller,
+             focusNode: focusNode,
+             decoration: decoration.copyWith(errorText: field.errorText),
+             keyboardType: keyboardType,
+             variables: variables,
+             autofocus: autofocus,
+             onChanged: onChangedHandler,
+             onSubmitted: onFieldSubmitted,
+             isShowMultiplyValueAsDot: isShowMultiplyValueAsDot,
+             style: style,
+             semantics: semantics,
+             semanticsValue: semanticsValue,
+             decimalSeparator: state.widget.decimalSeparator,
+           );
+         },
+       );
 
   /// Controls the math input being edited.
   ///
   /// If null, this widget will create its own [MathFieldEditingController].
   final MathFieldEditingController? controller;
+
+  /// The decimal separator to display in the field and on its keyboard.
+  ///
+  /// See [MathField.decimalSeparator].
+  final DecimalSeparator? decimalSeparator;
+
+  /// If true, the multiply value will be shown as dot else it will be shown as x.
+  final bool isShowMultiplyValueAsDot;
 
   @override
   _MathFormFieldState createState() => _MathFormFieldState();
